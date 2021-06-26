@@ -10,6 +10,7 @@ import javax.persistence.Table;
 
 @Table(name="NOTA")
 @Entity
+//@XmlRootElement //Esto permite recibir peticiones xml
 public class Nota implements Serializable {
 	
 	public Nota() {
