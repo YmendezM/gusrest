@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,9 +50,9 @@ public class NotaController {
 	}
 	 
 	@GetMapping("/notas")
-	public List<NotaModel> getAllNota(){
+	public List<NotaModel> getAllNota(Pageable pageable){
 		
-		return servi.getAllNota();
+		return servi.getAllNotaPage(pageable);
 	}
 	 
 	 
