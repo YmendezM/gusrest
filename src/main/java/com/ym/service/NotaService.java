@@ -2,6 +2,8 @@ package com.ym.service;
 
 import java.util.List;
 
+import org.apache.juli.logging.Log;
+import org.apache.juli.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -23,22 +25,24 @@ public class NotaService {
 	@Qualifier("NotaConverter")
 	private NotaConverter converter;
 	
+	private static final Log logger = LogFactory.getLog(NotaService.class);
+	
 	public boolean AddNota(Nota nota) {
-		
+		logger.info("CREANDO NOTA");
 		try {
 			repo.save(nota);
 			return true;
 					
 			
 		}catch(Exception e){
-			
+			logger.error("ERROR CREANDO NOTA: " + e);
 			return false;
 		}
 		
 	}
 	
 	public boolean UpdateNota(Nota nota) {
-			
+		logger.info("ACTUALIZANDO NOTA");
 			try {
 				repo.save(nota);
 				return true;
@@ -52,6 +56,7 @@ public class NotaService {
 		}
 	
 	public boolean DeleteNota(String nombre, long id) {
+			logger.info("ELIMINANDO NOTA");
 				try {
 					Nota nota = repo.findByNombreAndId(nombre, id);
 					repo.delete(nota);
@@ -66,7 +71,7 @@ public class NotaService {
 			}
 		
 	public List<NotaModel> getAllNota() {
-				
+			logger.info("LISTANDO NOTA");
 				return converter.convertirLista(repo.findAll());
 			
 		}
