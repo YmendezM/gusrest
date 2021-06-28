@@ -2,11 +2,15 @@ package com.ym.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.ym.service.UsuarioService;
 
@@ -19,6 +23,12 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 	@Qualifier("UsuarioService")
 	private UsuarioService servi;
 	
+	 @Bean
+	 public PasswordEncoder passwordEncoder() {
+	        return new BCryptPasswordEncoder();
+	 }
+
+	
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(servi);
@@ -26,8 +36,17 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		// TODO Auto-generated method stub
-		super.configure(http);
+		http.csrf().disable().authorizeRequests()
+        .antMatchers("/login").permitAll() //permitimos el acceso a /login a cualquiera
+        .anyRequest().authenticated() //cualquier otra peticion requiere autenticacion
+        .and()
+        // Las peticiones /login pasaran previamente por este filtro
+        .addFilterBefore(new LoginFilter("/login", authenticationManager()),
+                UsernamePasswordAuthenticationFilter.class)
+            
+        // Las demás peticiones pasarán por este filtro para validar el token
+        .addFilterBefore(new JwtFilter(),
+                UsernamePasswordAuthenticationFilter.class);
 	}
 
 }
